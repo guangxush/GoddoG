@@ -1,6 +1,7 @@
 package com.shgx.business.business.service;
 
 import com.shgx.business.business.model.Business;
+import com.shgx.business.business.model.BusinessVO;
 
 /**
  * @author: guangxush
@@ -13,7 +14,7 @@ public interface BusinessService {
      * @param uid
      * @return
      */
-    Business queryBusiness(String uid);
+    BusinessVO queryBusiness(String uid);
 
     /**
      * 保存交易
