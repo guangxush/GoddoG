@@ -18,6 +18,14 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <modules>
+        <module>common</module>
+        <module>business</module>
+        <module>subbusone</module>
+        <module>subbustwo</module>
+        <module>transmag</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

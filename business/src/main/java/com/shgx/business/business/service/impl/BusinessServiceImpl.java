@@ -39,11 +39,10 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Boolean saveBusiness(Business business) {
-
-        try{
-            score.setDate(new Date());
-            save(score);
-        }catch (Exception e){
+        try {
+            business.setDate(new Date());
+            save(business);
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -51,13 +50,21 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Boolean updateBusiness(Business business) {
-        return null;
+        Optional<Business> businessDB = businessRepo.findByUid(business.getUid());
+        if (businessDB.isPresent()) {
+            business.setDate(new Date());
+            save(business);
+        } else {
+            log.error("the {} is not in db!", business.toString());
+            return false;
+        }
+        return true;
     }
 
-    private BusinessVO save(Business business){
+    private BusinessVO save(Business business) {
         business = businessRepo.save(business);
-        if(business.getId()<=0){
-            log.error("fail to save the business:{}",business.toString());
+        if (business.getId() <= 0) {
+            log.error("fail to save the business:{}", business.toString());
         }
         return BusinessVO.builder()
                 .uid(business.getUid())
