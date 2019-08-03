@@ -3,13 +3,14 @@ package com.shgx.business.business.service.impl;
 import com.shgx.business.business.model.Business;
 import com.shgx.business.business.model.BusinessVO;
 import com.shgx.business.business.repository.BusinessRepo;
+import com.shgx.business.business.service.BusinessCore;
 import com.shgx.business.business.service.BusinessService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,6 +23,10 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Autowired
     private BusinessRepo businessRepo;
+
+
+    @Autowired
+    private BusinessCore businessCore;
 
 
     @Override
@@ -39,6 +44,10 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Boolean saveBusiness(Business business) {
+        Optional<List<Business>> businessDB = businessRepo.findAllByUid(business.getUid());
+        if(businessDB.isPresent()){
+            return true;
+        }
         try {
             business.setDate(new Date());
             save(business);
@@ -52,7 +61,7 @@ public class BusinessServiceImpl implements BusinessService {
     public Boolean updateBusiness(Business business) {
         Optional<Business> businessDB = businessRepo.findByUid(business.getUid());
         if (businessDB.isPresent()) {
-            business.setDate(new Date());
+            businessDB.get().setDate(new Date());
             save(business);
         } else {
             log.error("the {} is not in db!", business.toString());
@@ -62,14 +71,18 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     private BusinessVO save(Business business) {
-        business = businessRepo.save(business);
-        if (business.getId() <= 0) {
-            log.error("fail to save the business:{}", business.toString());
-        }
-        return BusinessVO.builder()
+        BusinessVO businessVO = BusinessVO.builder()
                 .uid(business.getUid())
                 .money(business.getMoney())
-                .status(business.getStatus())
                 .build();
+        if(businessCore.doBusiness(businessVO)){
+            business.setStatus(2);
+            business = businessRepo.save(business);
+            if (business.getId() <= 0) {
+                log.error("fail to save the business:{}", business.toString());
+                return null;
+            }
+        }
+        return businessVO;
     }
 }

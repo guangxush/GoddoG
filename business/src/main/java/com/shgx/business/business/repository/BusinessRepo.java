@@ -4,6 +4,7 @@ import com.shgx.business.business.model.Business;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,4 +15,6 @@ import java.util.Optional;
 public interface BusinessRepo extends JpaRepository<Business, Long> {
 
     Optional<Business> findByUid(String uid);
+
+    Optional<List<Business>> findAllByUid(String uid);
 }
