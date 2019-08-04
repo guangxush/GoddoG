@@ -1,9 +1,12 @@
 package com.shgx.business.business.service;
 
-import com.shgx.common.common.rest.RequestAPI;
+import com.shgx.business.business.model.BusinessVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author: guangxush
@@ -12,15 +15,41 @@ import javax.annotation.PostConstruct;
 @Service
 public class RequestService {
 
-    private RequestAPI requestAPI = new RequestAPI();
+    @Autowired
+    private PostRequestService postRequestService;
 
-    @PostConstruct
-    public void init(){
-        requestAPI.init();
+    public boolean doBusiness(String[] urls, BusinessVO businessVO) {
+        List<String> sendUrl = new ArrayList<>();
+        for (String url : urls) {
+            if (doTry(url, businessVO)) {
+                sendUrl.add(url);
+            }
+        }
+        if (sendUrl.size() == urls.length) {
+            for (String url : sendUrl) {
+                doConfirm(url, businessVO);
+            }
+            return true;
+        } else {
+            for (String url : sendUrl) {
+                doCancel(url, businessVO);
+            }
+            return false;
+        }
     }
 
-    public boolean doTry(String url, String uid){
-        boolean result = requestAPI.internalGet(url, uid);
-        return result;
+    public boolean doTry(String url, BusinessVO businessVO) {
+        businessVO.setStatus(1);
+        return postRequestService.jsonRequest(url, businessVO);
+    }
+
+    public boolean doConfirm(String url, BusinessVO businessVO) {
+        businessVO.setStatus(2);
+        return postRequestService.jsonRequest(url, businessVO);
+    }
+
+    public boolean doCancel(String url, BusinessVO businessVO) {
+        businessVO.setStatus(3);
+        return postRequestService.jsonRequest(url, businessVO);
     }
 }

@@ -5,6 +5,7 @@ import com.shgx.business.business.model.BusinessVO;
 import com.shgx.business.business.repository.BusinessRepo;
 import com.shgx.business.business.service.BusinessCore;
 import com.shgx.business.business.service.BusinessService;
+import com.shgx.business.business.service.RequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,16 @@ public class BusinessServiceImpl implements BusinessService {
     private BusinessRepo businessRepo;
 
 
+//    @Autowired
+//    private BusinessCore businessCore;
+
+
     @Autowired
-    private BusinessCore businessCore;
+    private RequestService requestService;
+
+    // todo 可配置化
+    private final String[] urls = {"http://localhost:8082/businesstwo/insert",
+            "http://localhost:8081/businessone/insert"};
 
 
     @Override
@@ -45,7 +54,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public Boolean saveBusiness(Business business) {
         Optional<List<Business>> businessDB = businessRepo.findAllByUid(business.getUid());
-        if(businessDB.isPresent()){
+        if (businessDB.isPresent()) {
             return true;
         }
         try {
@@ -75,7 +84,7 @@ public class BusinessServiceImpl implements BusinessService {
                 .uid(business.getUid())
                 .money(business.getMoney())
                 .build();
-        if(businessCore.doBusiness(businessVO)){
+        if (requestService.doBusiness(urls, businessVO)) {
             business.setStatus(2);
             business = businessRepo.save(business);
             if (business.getId() <= 0) {
