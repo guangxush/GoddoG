@@ -44,6 +44,7 @@ public class RequestService {
     }
 
     public boolean doConfirm(String url, BusinessVO businessVO) {
+        url = url.replace("insert", "update");
         businessVO.setStatus(2);
         return postRequestService.jsonRequest(url, businessVO);
     }

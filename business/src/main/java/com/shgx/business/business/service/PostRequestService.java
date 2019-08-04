@@ -38,17 +38,18 @@ public class PostRequestService {
         }
         String request = url;
         HttpHeaders headers = new HttpHeaders();
-        MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
-        headers.setContentType(type);
-        headers.add("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
+        //MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+        //headers.setContentType(type);
+        //headers.add("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
         //headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        HttpEntity<String> requestEntity = new HttpEntity<>(objectJson);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<>(objectJson, headers);
         try {
             ResponseEntity<String> entity = restTemplate.postForEntity(request, requestEntity, String.class);
             //如果请求数据成功，获取请求之后的值
             if (entity.getStatusCode() == HttpStatus.OK) {
                 JsonNode jsonNode = new ObjectMapper().readTree(entity.getBody());
-                sendResult = Boolean.valueOf(jsonNode.get("result").asText());
+                sendResult = Boolean.valueOf(jsonNode.get("data").asText());
                 if (!sendResult) {
                     log.info("send {} failed!, the return result is {}.", object, sendResult);
                 }

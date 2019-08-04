@@ -5,6 +5,7 @@ import com.shgx.subbus.subbusone.model.BusinessOneVO;
 import com.shgx.subbus.subbusone.repository.BusinessOneRepo;
 import com.shgx.subbus.subbusone.service.BusinessOneService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class BusinessOneServiceImpl implements BusinessOneService {
     @Override
     public Boolean saveBusinessOne(BusinessOne BusinessOne) {
         Optional<List<BusinessOne>> businessDB = businessOneRepo.findAllByUid(BusinessOne.getUid());
-        if(businessDB.isPresent()){
+        if (businessDB.isPresent()) {
             return true;
         }
         try {
@@ -53,27 +54,31 @@ public class BusinessOneServiceImpl implements BusinessOneService {
     }
 
     @Override
-    public Boolean updateBusinessOne(BusinessOne BusinessOne) {
-        Optional<BusinessOne> BusinessOneDB = businessOneRepo.findByUid(BusinessOne.getUid());
-        if (BusinessOneDB.isPresent()) {
-            BusinessOne.setDate(new Date());
-            save(BusinessOne);
+    public Boolean updateBusinessOne(BusinessOne businessOne) {
+        Optional<BusinessOne> businessOneDB = businessOneRepo.findByUid(businessOne.getUid());
+        if (businessOneDB.isPresent() && businessOne != null) {
+            BusinessOne business = businessOneDB.get();
+            business.setDate(new Date());
+            business.setMoney(businessOne.getMoney());
+            business.setStatus(businessOne.getStatus());
+            business.setUid(businessOne.getUid());
+            save(business);
         } else {
-            log.error("the {} is not in db!", BusinessOne.toString());
+            log.error("the {} is not in db!", businessOne.toString());
             return false;
         }
         return true;
     }
 
-    private BusinessOneVO save(BusinessOne BusinessOne) {
-        BusinessOne = businessOneRepo.save(BusinessOne);
-        if (BusinessOne.getId() <= 0) {
-            log.error("fail to save the BusinessOne:{}", BusinessOne.toString());
+    private BusinessOneVO save(BusinessOne businessOne) {
+        businessOne = businessOneRepo.save(businessOne);
+        if (businessOne.getId() <= 0) {
+            log.error("fail to save the BusinessOne:{}", businessOne.toString());
         }
         return BusinessOneVO.builder()
-                .uid(BusinessOne.getUid())
-                .money(BusinessOne.getMoney())
-                .status(BusinessOne.getStatus())
+                .uid(businessOne.getUid())
+                .money(businessOne.getMoney())
+                .status(businessOne.getStatus())
                 .build();
     }
 }

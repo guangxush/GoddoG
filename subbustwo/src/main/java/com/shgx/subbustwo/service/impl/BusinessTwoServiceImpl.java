@@ -5,6 +5,7 @@ import com.shgx.subbustwo.model.BusinessTwo;
 import com.shgx.subbustwo.model.BusinessTwoVO;
 import com.shgx.subbustwo.reporsitory.BusinessTwoRepo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,27 +54,31 @@ public class BusinessTwoServiceImpl implements BusinessTwoService {
     }
 
     @Override
-    public Boolean updateBusinessTwo(BusinessTwo BusinessTwo) {
-        Optional<BusinessTwo> BusinessOneDB = businessTwoRepo.findByUid(BusinessTwo.getUid());
-        if (BusinessOneDB.isPresent()) {
-            BusinessTwo.setDate(new Date());
-            save(BusinessTwo);
+    public Boolean updateBusinessTwo(BusinessTwo businessTwo) {
+        Optional<BusinessTwo> businessTwoDB = businessTwoRepo.findByUid(businessTwo.getUid());
+        if (businessTwoDB.isPresent() && businessTwo != null) {
+            BusinessTwo business = businessTwoDB.get();
+            business.setDate(new Date());
+            business.setMoney(businessTwo.getMoney());
+            business.setStatus(businessTwo.getStatus());
+            business.setUid(businessTwo.getUid());
+            save(business);
         } else {
-            log.error("the {} is not in db!", BusinessTwo.toString());
+            log.error("the {} is not in db!", businessTwo.toString());
             return false;
         }
         return true;
     }
 
-    private BusinessTwoVO save(BusinessTwo BusinessTwo) {
-        BusinessTwo = businessTwoRepo.save(BusinessTwo);
-        if (BusinessTwo.getId() <= 0) {
-            log.error("fail to save the BusinessTwo:{}", BusinessTwo.toString());
+    private BusinessTwoVO save(BusinessTwo businessTwo) {
+        businessTwo = businessTwoRepo.save(businessTwo);
+        if (businessTwo.getId() <= 0) {
+            log.error("fail to save the BusinessTwo:{}", businessTwo.toString());
         }
         return BusinessTwoVO.builder()
-                .uid(BusinessTwo.getUid())
-                .money(BusinessTwo.getMoney())
-                .status(BusinessTwo.getStatus())
+                .uid(businessTwo.getUid())
+                .money(businessTwo.getMoney())
+                .status(businessTwo.getStatus())
                 .build();
     }
 }

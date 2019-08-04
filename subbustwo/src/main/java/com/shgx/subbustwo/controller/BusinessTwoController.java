@@ -35,7 +35,7 @@ public class BusinessTwoController {
     }
 
 
-    @RequestMapping(path = "/update", method = RequestMethod.PUT)
+    @RequestMapping(path = "/update", method = RequestMethod.POST)
     @ResponseBody
     public ApiResponse<Boolean> updateBusiness(@RequestBody BusinessTwo business) {
         Boolean result = businessService.updateBusinessTwo(business);
