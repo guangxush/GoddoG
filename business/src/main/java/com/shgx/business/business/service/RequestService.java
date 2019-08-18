@@ -3,6 +3,7 @@ package com.shgx.business.business.service;
 import com.shgx.business.business.model.BusinessVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class RequestService {
     @Autowired
     private PostRequestService postRequestService;
 
+    @Transactional(rollbackFor = Exception.class)
     public boolean doBusiness(String[] urls, BusinessVO businessVO) {
         List<String> sendUrl = new ArrayList<>();
         for (String url : urls) {
